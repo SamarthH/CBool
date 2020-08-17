@@ -19,7 +19,6 @@ asynclistnode* _search_async_state(asynclist* list, int* check_state, int n, int
 	if(*flag == 1){
 		return node;
 	}
-	*flag = 1;
 	while(node->next)
 	{
 		node = node->next;
