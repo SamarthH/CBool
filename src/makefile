@@ -1,12 +1,12 @@
 IDIR =../include
 CC=gcc
 CFLAGS=-I$(IDIR) -Wall 
-EXTRAFLAGS= -g
+EXTRAFLAGS= -pg
 
 ODIR=obj
 LDIR =../lib
 
-LIBS= -fopenmp -lgsl -lgslcblas -lm
+LIBS= -fopenmp -lgsl -lgslcblas -lm -pthread
 
 _DEPS = AsynchronousUpdate.h constants.h final_list.h inputMethod.h parseMatrix.h requirements.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))

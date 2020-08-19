@@ -3,5 +3,6 @@
 
 #include "final_list.h"
 
-asynclist* updateAsync(int n, int** topology, int* fixed_nodes);
+asynclist* updateAsyncList(int n, int** topology, int* fixed_nodes, int height, int seed_init);
+void updateAsyncTree(int n, int** topology, int* fixed_nodes, base* stable);
 #endif

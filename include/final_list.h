@@ -20,6 +20,7 @@ typedef struct synclistnode_t
 
 typedef struct asynclist_t
 {
+	int n_elements;
 	asynclistnode* next;
 }asynclist;
 
@@ -43,5 +44,25 @@ void clear_synclist(synclist* list);
 void print_asynclist(asynclist* list, int n);
 
 void print_synclist(synclist* list, int n);
+
+asynclist* merge_asynclist(asynclist* list1, asynclist* list2, int n);
+
+typedef struct tree_t
+{
+	int n_occurances;
+	int* state;
+	struct tree_t* left;
+	struct tree_t* right;
+}tree;
+
+typedef struct base_tree_t
+{
+	tree* root;
+}base;
+
+void init_tree(base* t);
+void add_node(base* t, int n, int* state);
+void delete_tree(base* t);
+void print_tree(base* t, int n);
 
 #endif

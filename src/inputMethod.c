@@ -7,7 +7,7 @@ void getInput(int* n_nodes, int*** topology, char* interaction_type, int** fixed
 {
 	char strength;
 	char query[30];
-
+	strength = 'n';
 	while(1)
 	{
 		scanf("%s",query);
@@ -22,7 +22,7 @@ void getInput(int* n_nodes, int*** topology, char* interaction_type, int** fixed
 				strength = 'a';
 			}
 			else if(strcmp(input,"DOM_INHIB")==0){ // Inhibitory Dominant
-				strength = 'a';
+				strength = 'i';
 			}
 			else{
 				exit(3);
