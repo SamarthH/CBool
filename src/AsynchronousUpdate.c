@@ -20,11 +20,17 @@ void singleStateUpdate(int n, int* state, int** topology, int seed)
 	{
 		int node_to_update = gsl_rng_uniform_int(asyncer,n);
 		int val_temp = 0;
-		#pragma omp parallel for reduction(+:val_temp)
+		
+		
+		//#pragma omp parallel for reduction(+:val_temp)
 		for (int j = 0; j < n; ++j)
 		{
-			val_temp+= state[j]*topology[node_to_update][j];
+			if(state[j])
+			{
+				val_temp+= topology[node_to_update][j];
+			}
 		}
+
 		state[node_to_update] = (val_temp>0) + (val_temp==0)*state[node_to_update];
 	}
 	//Free the rng
@@ -145,11 +151,13 @@ void updateAsyncTree(int n, int** topology, int* fixed_nodes, base* stable)
 		//int* state=(int*)malloc(n*sizeof(int));
 		int state[n];
 		getFinalState(n,state,rangen,topology,fixed_nodes,i);
-
+		
 		#pragma omp critical(addToTree)
 		{
 			add_node(stable,n,state);
 		}
+
+		
 		//free(state);
 	}
 	gsl_rng_free(rangen);
