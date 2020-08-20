@@ -1,7 +1,7 @@
 IDIR =../include
 CC=gcc
 CFLAGS=-I$(IDIR) -Wall 
-EXTRAFLAGS= -O2
+EXTRAFLAGS= --coverage -pg
 
 ODIR=obj
 LDIR =../lib

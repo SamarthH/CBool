@@ -31,6 +31,26 @@ void singleStateUpdate(int n, int* state, int** topology, int seed)
 	gsl_rng_free(asyncer);
 }
 
+void getFinalState(int n, int state[n], gsl_rng* rangen, int** topology, int* fixed_nodes, int i)
+{
+	#pragma omp parallel for
+	for (int j = 0; j < n; ++j)
+	{
+		if(fixed_nodes[j] == -1)
+		{
+			#pragma omp critical(rand)
+			{
+				state[j] = getBool(rangen);
+			}
+		}
+		else{
+			state[j] = fixed_nodes[j];
+		}
+	}
+
+	singleStateUpdate(n,state,topology,i+1);
+}
+
 asynclist* updateAsyncList(int n, int** topology, int* fixed_nodes, int height, int seed_init)
 {
 	if(height)
@@ -124,22 +144,7 @@ void updateAsyncTree(int n, int** topology, int* fixed_nodes, base* stable)
 		*/
 		//int* state=(int*)malloc(n*sizeof(int));
 		int state[n];
-		#pragma omp parallel for
-		for (int j = 0; j < n; ++j)
-		{
-			if(fixed_nodes[j] == -1)
-			{
-				#pragma omp critical(rand)
-				{
-					state[j] = getBool(rangen);
-				}
-			}
-			else{
-				state[j] = fixed_nodes[j];
-			}
-		}
-
-		singleStateUpdate(n,state,topology,i+1);
+		getFinalState(n,state,rangen,topology,fixed_nodes,i);
 
 		#pragma omp critical(addToTree)
 		{
