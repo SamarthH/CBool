@@ -122,7 +122,9 @@ void updateAsyncTree(int n, int** topology, int* fixed_nodes, base* stable)
 		gsl_rng* rangen = gsl_rng_alloc(gsl_rng_ranlxs2);
 		gsl_rng_set(rangen,i);
 		*/
-		int* state=(int*)malloc(n*sizeof(int));
+		//int* state=(int*)malloc(n*sizeof(int));
+		int state[n];
+		#pragma omp parallel for
 		for (int j = 0; j < n; ++j)
 		{
 			if(fixed_nodes[j] == -1)
@@ -143,7 +145,7 @@ void updateAsyncTree(int n, int** topology, int* fixed_nodes, base* stable)
 		{
 			add_node(stable,n,state);
 		}
-		free(state);
+		//free(state);
 	}
 	gsl_rng_free(rangen);
 }
