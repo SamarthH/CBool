@@ -300,7 +300,7 @@ void _print_recur(tree* t, int n)
 			printf("%d\t", t->n_occurances);
 			for (int i = 0; i < n; ++i)
 			{
-				printf("%d ",t->state[i]);
+				printf("%d\t",t->state[i]);
 			}
 			printf("\n");
 		}
@@ -309,5 +309,11 @@ void _print_recur(tree* t, int n)
 
 void print_tree(base* t, int n)
 {
+	printf("N_Occurances\t");
+	for (int i = 0; i < n; ++i)
+	{
+		printf("gene%d\t",i);
+	}
+	printf("\n");
 	_print_recur(t->root,n);
 }
