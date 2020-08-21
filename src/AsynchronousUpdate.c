@@ -10,7 +10,7 @@ int getBool(gsl_rng* r)
 	return gsl_rng_uniform_int(r,2);
 }
 
-void singleStateUpdate(int n, int* state, int** topology, int seed)
+void singleStateUpdate(int n, int* state, int** topology, int seed, int* fixed_nodes)
 {
 	//Perform Asynchronous Updates
 	gsl_rng* asyncer = gsl_rng_alloc(gsl_rng_ranlxs2);
@@ -19,19 +19,24 @@ void singleStateUpdate(int n, int* state, int** topology, int seed)
 	for (int i = 0; i < ITER_ASYNCHRONOUS; ++i)
 	{
 		int node_to_update = gsl_rng_uniform_int(asyncer,n);
-		int val_temp = 0;
-		
-		
-		//#pragma omp parallel for reduction(+:val_temp)
-		for (int j = 0; j < n; ++j)
+		if(fixed_nodes[node_to_update] == NORMAL_FLAG)
 		{
-			if(state[j])
+			int val_temp = 0;
+			
+			for (int j = 0; j < n; ++j)
 			{
-				val_temp+= topology[node_to_update][j];
+				val_temp+= state[j]*topology[node_to_update][j];
+			}
+			
+			if(val_temp > 0)
+			{
+				state[node_to_update] = 1;
+			}
+			else if(val_temp<0)
+			{
+				state[node_to_update] = LOWER_EXPRESSION;
 			}
 		}
-
-		state[node_to_update] = (val_temp>0) + (val_temp==0)*state[node_to_update];
 	}
 	//Free the rng
 	gsl_rng_free(asyncer);
@@ -42,11 +47,15 @@ void getFinalState(int n, int state[n], gsl_rng* rangen, int** topology, int* fi
 	#pragma omp parallel for
 	for (int j = 0; j < n; ++j)
 	{
-		if(fixed_nodes[j] == -1)
+		if(fixed_nodes[j]==NORMAL_FLAG)
 		{
 			#pragma omp critical(rand)
 			{
 				state[j] = getBool(rangen);
+			}
+			if(state[j]==0)
+			{
+				state[j] = LOWER_EXPRESSION;
 			}
 		}
 		else{
@@ -54,7 +63,7 @@ void getFinalState(int n, int state[n], gsl_rng* rangen, int** topology, int* fi
 		}
 	}
 
-	singleStateUpdate(n,state,topology,i+1);
+	singleStateUpdate(n,state,topology,i+1,fixed_nodes);
 }
 
 asynclist* updateAsyncList(int n, int** topology, int* fixed_nodes, int height, int seed_init)
@@ -100,9 +109,13 @@ asynclist* updateAsyncList(int n, int** topology, int* fixed_nodes, int height, 
 
 		for (int i = 0; i < n; ++i)
 		{
-			if(fixed_nodes[i] == -1)
+			if(fixed_nodes[i] == NORMAL_FLAG)
 			{
 				state[i] = gsl_rng_uniform_int(rangen,2);
+				if(state[i]==0)
+				{
+					state[i] = LOWER_EXPRESSION;
+				}
 			}
 			else
 			{
@@ -110,7 +123,7 @@ asynclist* updateAsyncList(int n, int** topology, int* fixed_nodes, int height, 
 			}
 		}
 
-		singleStateUpdate(n,state,topology,gsl_rng_get(rangen));
+		singleStateUpdate(n,state,topology,gsl_rng_get(rangen),fixed_nodes);
 		list->n_elements = 1;
 		asynclistnode* node = (asynclistnode*)malloc(sizeof(asynclistnode));
 		if(!node)

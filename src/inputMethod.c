@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "inputMethod.h"
+#include "constants.h"
 
 void getInput(int* n_nodes, int*** topology, char* interaction_type, int** fixed_nodes)
 {
@@ -68,11 +69,11 @@ void getInput(int* n_nodes, int*** topology, char* interaction_type, int** fixed
 				if(input[i] == 'a'){
 					(*fixed_nodes)[i] = 1;
 				}
-				else if(input[i] == 'i'){
-					(*fixed_nodes)[i] = 0;
-				}
 				else if(input[i] == 'n'){
-					(*fixed_nodes)[i] = -1;
+					(*fixed_nodes)[i] = NORMAL_FLAG;
+				}
+				else if(input[i] == 'i'){
+					(*fixed_nodes)[i] = LOWER_EXPRESSION;
 				}
 			}
 		}
